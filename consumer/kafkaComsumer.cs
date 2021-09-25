@@ -6,10 +6,11 @@ namespace consumer
 {
     public class KafkaComsumer 
     {
-
-        public KafkaComsumer()
+        readonly IConsumer<Ignore, string> _Consumer;
+        public KafkaComsumer(string Topic)
         {
-            
+            _Consumer= new ConsumerBuilder<Ignore, string>(Config()).Build();
+            _Consumer.Subscribe(Topic);
         }
         public ConsumerConfig Config()
         {
@@ -30,15 +31,13 @@ namespace consumer
 
 
 
-        public void ReadMessage(string Topic)
+        public void ReadMessage()
         {
-            using var consumer = new ConsumerBuilder<Ignore, string>(Config()).Build();
-            consumer.Subscribe(Topic);
             while (true)
             {
                 try
                 {
-                    var result = consumer.Consume(new CancellationToken());
+                    var result = _Consumer.Consume(new CancellationToken());
                     if (result != null)
                     {
                         Console.WriteLine(result.Message.Value);
