@@ -12,9 +12,6 @@ namespace consumer
         public KafkaComsumer()
         {
             _Consumer = new ConsumerBuilder<Ignore, string>(Config()).Build();
-        
-
-
         }
 
        
