@@ -7,8 +7,9 @@ namespace consumer
         static void Main(string[] args)
         {
             Console.WriteLine("Wait for Get Messages  ....");
-            KafkaComsumer kafka = new KafkaComsumer("TestTopic");
+            KafkaComsumer kafka = new KafkaComsumer();
             kafka.MessageRecived += Kafka_MessageRecived;
+           kafka.SetUp("TestTopic");
             Console.ReadLine();
         }
 

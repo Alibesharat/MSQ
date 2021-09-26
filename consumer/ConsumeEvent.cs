@@ -10,5 +10,8 @@ namespace consumer
     {
         public ConsumeResult<Ignore, string> Result { get; set; }
 
+        public delegate void MessageRecived(Object sender, ConsumeResultEventArgs e);
+
+
     }
 }

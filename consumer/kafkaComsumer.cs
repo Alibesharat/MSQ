@@ -8,13 +8,16 @@ namespace consumer
     {
         readonly IConsumer<Ignore, string> _Consumer;
         public event EventHandler<ConsumeResultEventArgs> MessageRecived;
-        public KafkaComsumer(string Topic)
+
+        public KafkaComsumer()
         {
             _Consumer = new ConsumerBuilder<Ignore, string>(Config()).Build();
-            _Consumer.Subscribe(Topic);
-            ReadMessage();
+        
+
 
         }
+
+       
 
 
 
@@ -32,17 +35,12 @@ namespace consumer
             return config;
         }
 
-        protected virtual void OnMessageRecived(ConsumeResultEventArgs e)
+       
+
+
+        public void SetUp(string Topic)
         {
-            EventHandler<ConsumeResultEventArgs> handler = MessageRecived;
-            handler?.Invoke(this, e);
-        }
-
-
-
-
-        private void ReadMessage()
-        {
+            _Consumer.Subscribe(Topic);
             while (true)
             {
                 try
@@ -50,10 +48,12 @@ namespace consumer
                     var result = _Consumer.Consume(new CancellationToken());
                     if (result != null)
                     {
-                        OnMessageRecived(new ConsumeResultEventArgs()
+                        ConsumeResultEventArgs args = new ConsumeResultEventArgs
                         {
                             Result = result
-                        });
+                        };
+                        MessageRecived?.Invoke(this,args);
+                       
                     }
                 }
                 catch (OperationCanceledException)
