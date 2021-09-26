@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace consumer
 {
@@ -9,8 +8,13 @@ namespace consumer
         {
             Console.WriteLine("Wait for Get Messages  ....");
             KafkaComsumer kafka = new KafkaComsumer("TestTopic");
-            kafka.ReadMessage();
+            kafka.MessageRecived += Kafka_MessageRecived;
             Console.ReadLine();
+        }
+
+        private static void Kafka_MessageRecived(object sender, ConsumeResultEventArgs e)
+        {
+            Console.WriteLine(e.Result.Message.Value);
         }
     }
 }

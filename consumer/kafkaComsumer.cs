@@ -4,14 +4,20 @@ using System.Threading;
 
 namespace consumer
 {
-    public class KafkaComsumer 
+    public class KafkaComsumer
     {
         readonly IConsumer<Ignore, string> _Consumer;
+        public event EventHandler<ConsumeResultEventArgs> MessageRecived;
         public KafkaComsumer(string Topic)
         {
-            _Consumer= new ConsumerBuilder<Ignore, string>(Config()).Build();
+            _Consumer = new ConsumerBuilder<Ignore, string>(Config()).Build();
             _Consumer.Subscribe(Topic);
+            ReadMessage();
+
         }
+
+
+
         public ConsumerConfig Config()
         {
             var config = new ConsumerConfig
@@ -26,12 +32,16 @@ namespace consumer
             return config;
         }
 
+        protected virtual void OnMessageRecived(ConsumeResultEventArgs e)
+        {
+            EventHandler<ConsumeResultEventArgs> handler = MessageRecived;
+            handler?.Invoke(this, e);
+        }
 
-      
 
 
 
-        public void ReadMessage()
+        private void ReadMessage()
         {
             while (true)
             {
@@ -40,7 +50,10 @@ namespace consumer
                     var result = _Consumer.Consume(new CancellationToken());
                     if (result != null)
                     {
-                        Console.WriteLine(result.Message.Value);
+                        OnMessageRecived(new ConsumeResultEventArgs()
+                        {
+                            Result = result
+                        });
                     }
                 }
                 catch (OperationCanceledException)
@@ -61,6 +74,6 @@ namespace consumer
         }
 
 
-       
+
     }
 }
